@@ -17,7 +17,7 @@
 
 name := "spark-bigquery"
 organization := "com.spotify"
-scalaVersion := "2.10.6"
+scalaVersion := "2.11.8"
 crossScalaVersions := Seq("2.10.6", "2.11.8")
 
 spName := "spotify/spark-bigquery"
@@ -27,6 +27,11 @@ spAppendScalaVersion := true
 spIncludeMaven := true
 
 libraryDependencies ++= Seq(
+  "com.databricks" %% "spark-avro" % "2.0.1",
+  "com.google.apis" % "google-api-services-bigquery" % "v2-rev289-1.21.0",
+  "com.google.cloud.bigdataoss" % "bigquery-connector" % "0.7.5-hadoop2",
+  "org.slf4j" % "slf4j-simple" % "1.7.21",
+  "joda-time" % "joda-time" % "2.9.3",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 )
 
