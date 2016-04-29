@@ -26,3 +26,9 @@ sqlContext.bigQuerySelect("SELECT word, word_count FROM `bigquery-public-data.sa
 
 - Bypass BigQuery connector for small dataset
 - Support writing DataFrames to BigQuery
+
+# License
+
+Copyright 2016 Spotify AB.
+
+Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
