@@ -28,7 +28,17 @@ import org.apache.hadoop.mapreduce.InputFormat
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, Row, SQLContext}
 
+import scala.util.Random
+
 package object bigquery {
+
+  object CreateDisposition extends Enumeration {
+    val CREATE_IF_NEEDED, CREATE_NEVER = Value
+  }
+
+  object WriteDisposition extends Enumeration {
+    val WRITE_TRUNCATE, WRITE_APPEND, WRITE_EMPTY = Value
+  }
 
   implicit class BigQuerySQLContext(self: SQLContext) {
 
@@ -80,6 +90,34 @@ package object bigquery {
 
     def bigQueryTable(tableSpec: String): DataFrame =
       bigQueryTable(BigQueryStrings.parseTableReference(tableSpec))
+
+  }
+
+  implicit class BigQueryDataFrame(self: DataFrame) {
+
+    val sqlContext = self.sqlContext
+    val conf = sqlContext.sparkContext.hadoopConfiguration
+    val bq = new BigQueryClient(conf)
+
+    sqlContext.setConf("spark.sql.avro.compression.codec", "deflate")
+
+    def saveAsBigQueryTable(tableRef: TableReference,
+                            writeDisposition: WriteDisposition.Value,
+                            createDisposition: CreateDisposition.Value): Unit = {
+      val bucket = conf.get(BigQueryConfiguration.GCS_BUCKET_KEY)
+      val temp = s"spark-bigquery-${System.currentTimeMillis()}=${Random.nextInt(Int.MaxValue)}"
+      val gcsPath = s"gs://$bucket/hadoop/tmp/spark-bigquery/$temp"
+      self.write.avro(gcsPath)
+      bq.load(gcsPath, tableRef, writeDisposition, createDisposition)
+    }
+
+    def saveAsBigQueryTable(tableSpec: String,
+                            writeDisposition: WriteDisposition.Value = null,
+                            createDisposition: CreateDisposition.Value = null): Unit =
+      saveAsBigQueryTable(
+        BigQueryStrings.parseTableReference(tableSpec),
+        writeDisposition,
+        createDisposition)
 
   }
 

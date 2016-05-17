@@ -69,6 +69,27 @@ class BigQueryClient(conf: Configuration) {
     destinationTable
   }
 
+  def load(gcsPath: String, destinationTable: TableReference,
+           writeDisposition: WriteDisposition.Value = null,
+           createDisposition: CreateDisposition.Value = null): Unit = {
+    var loadConfig = new JobConfigurationLoad()
+      .setDestinationTable(destinationTable)
+      .setSourceFormat("AVRO")
+      .setSourceUris(List(gcsPath + "/*.avro").asJava)
+    if (writeDisposition != null) {
+      loadConfig = loadConfig.setWriteDisposition(writeDisposition.toString)
+    }
+    if (createDisposition != null) {
+      loadConfig = loadConfig.setCreateDisposition(createDisposition.toString)
+    }
+
+    val jobConfig = new JobConfiguration().setLoad(loadConfig)
+    val jobReference = createJobReference(projectId, JOB_ID_PREFIX)
+    val job = new Job().setConfiguration(jobConfig).setJobReference(jobReference)
+    bigquery.jobs().insert(projectId, job).execute()
+    waitForJob(job)
+  }
+
   private def waitForJob(job: Job): Unit = {
     BigQueryUtils.waitForJobCompletion(bigquery, projectId, job.getJobReference, new Progressable {
       override def progress(): Unit = {}
