@@ -40,6 +40,9 @@ package object bigquery {
     val WRITE_TRUNCATE, WRITE_APPEND, WRITE_EMPTY = Value
   }
 
+  /**
+   * Enhanced version of [[SQLContext]] with BigQuery support.
+   */
   implicit class BigQuerySQLContext(self: SQLContext) {
 
     val sc = self.sparkContext
@@ -51,6 +54,9 @@ package object bigquery {
       conf.set("fs.gs.impl", classOf[GoogleHadoopFileSystem].getName)
     }
 
+    /**
+     * Set GCP project ID for BigQuery.
+     */
     def setBigQueryProjectId(projectId: String): Unit = {
       conf.set(BigQueryConfiguration.PROJECT_ID_KEY, projectId)
 
@@ -60,11 +66,21 @@ package object bigquery {
       }
     }
 
+    /**
+     * Set GCS bucket for temporary BigQuery files.
+     */
     def setBigQueryGcsBucket(gcsBucket: String): Unit =
       conf.set(BigQueryConfiguration.GCS_BUCKET_KEY, gcsBucket)
 
+    /**
+     * Perform a BigQuery SELECT query and load results as a [[DataFrame]].
+     * @param sqlQuery SQL query in SQL-2011 dialect.
+     */
     def bigQuerySelect(sqlQuery: String): DataFrame = bigQueryTable(bq.query(sqlQuery))
 
+    /**
+     * Load a BigQuery table as a [[DataFrame]].
+     */
     def bigQueryTable(tableRef: TableReference): DataFrame = {
       conf.setClass(
         AbstractBigQueryInputFormat.INPUT_FORMAT_CLASS_KEY,
@@ -88,11 +104,17 @@ package object bigquery {
       self.createDataFrame(rdd.map(converter), structType)
     }
 
+    /**
+     * Load a BigQuery table as a [[DataFrame]].
+     */
     def bigQueryTable(tableSpec: String): DataFrame =
       bigQueryTable(BigQueryStrings.parseTableReference(tableSpec))
 
   }
 
+  /**
+   * Enhanced version of [[DataFrame]] with BigQuery support.
+   */
   implicit class BigQueryDataFrame(self: DataFrame) {
 
     val sqlContext = self.sqlContext
@@ -101,6 +123,9 @@ package object bigquery {
 
     sqlContext.setConf("spark.sql.avro.compression.codec", "deflate")
 
+    /**
+     * Save a [[DataFrame]] to a BigQuery table.
+     */
     def saveAsBigQueryTable(tableRef: TableReference,
                             writeDisposition: WriteDisposition.Value,
                             createDisposition: CreateDisposition.Value): Unit = {
@@ -111,6 +136,9 @@ package object bigquery {
       bq.load(gcsPath, tableRef, writeDisposition, createDisposition)
     }
 
+    /**
+     * Save a [[DataFrame]] to a BigQuery table.
+     */
     def saveAsBigQueryTable(tableSpec: String,
                             writeDisposition: WriteDisposition.Value = null,
                             createDisposition: CreateDisposition.Value = null): Unit =

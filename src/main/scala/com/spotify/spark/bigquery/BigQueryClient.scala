@@ -61,6 +61,9 @@ class BigQueryClient(conf: Configuration) {
   private val JOB_ID_PREFIX = "spark_bigquery"
   private val TIME_FORMATTER = DateTimeFormat.forPattern("yyyyMMddHHmmss")
 
+  /**
+   * Perform a BigQuery SELECT query and save results to a temporary table.
+   */
   def query(sqlQuery: String): TableReference = {
     val location = getQueryLocation(sqlQuery)
     val destinationTable = temporaryTable(location)
@@ -69,6 +72,9 @@ class BigQueryClient(conf: Configuration) {
     destinationTable
   }
 
+  /**
+   * Load an Avro data set on GCS to a BigQuery table.
+   */
   def load(gcsPath: String, destinationTable: TableReference,
            writeDisposition: WriteDisposition.Value = null,
            createDisposition: CreateDisposition.Value = null): Unit = {
