@@ -36,12 +36,19 @@ package object bigquery {
     val conf = sc.hadoopConfiguration
     val bq = new BigQueryClient(conf)
 
+    // Register GCS implementation
     if (conf.get("fs.gs.impl") == null) {
       conf.set("fs.gs.impl", classOf[GoogleHadoopFileSystem].getName)
     }
 
-    def setBigQueryProjectId(projectId: String): Unit =
+    def setBigQueryProjectId(projectId: String): Unit = {
       conf.set(BigQueryConfiguration.PROJECT_ID_KEY, projectId)
+
+      // Also set project ID for GCS connector
+      if (conf.get("fs.gs.project.id") == null) {
+        conf.set("fs.gs.project.id", projectId)
+      }
+    }
 
     def setBigQueryGcsBucket(gcsBucket: String): Unit =
       conf.set(BigQueryConfiguration.GCS_BUCKET_KEY, gcsBucket)
