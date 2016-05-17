@@ -18,7 +18,12 @@ sqlContext.setBigQueryGcsBucket("<GCS_BUCKET>")
 
 // SQL 2011
 // https://cloud.google.com/bigquery/sql-reference/
-sqlContext.bigQuerySelect("SELECT word, word_count FROM `bigquery-public-data.samples.shakespeare`")
+val df = sqlContext.bigQuerySelect(
+  """
+    |SELECT word, word_count FROM `bigquery-public-data.samples.shakespeare
+  """.stripMargin)
+
+df.saveAsBigQueryTable("my-project:my_dataset.my_table")
 ```
 
 # License
