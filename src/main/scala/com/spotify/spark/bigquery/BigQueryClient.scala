@@ -36,7 +36,7 @@ import scala.collection.JavaConverters._
 import scala.util.Random
 import scala.util.control.NonFatal
 
-class BigQueryClient(conf: Configuration) {
+private[bigquery] class BigQueryClient(conf: Configuration) {
 
   private val logger: Logger = LoggerFactory.getLogger(classOf[BigQueryClient])
 
