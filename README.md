@@ -2,6 +2,7 @@ spark-bigquery
 ==============
 
 [![Build Status](https://travis-ci.org/spotify/spark-bigquery.svg?branch=master)](https://travis-ci.org/spotify/spark-bigquery)
+[![GitHub license](https://img.shields.io/github/license/spotify/scio.svg)]()
 
 Google BigQuery support for Spark, SQL, and DataFrames.
 
