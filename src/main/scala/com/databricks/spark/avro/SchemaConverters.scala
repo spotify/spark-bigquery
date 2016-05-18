@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// scalastyle:off
 package com.databricks.spark.avro
 
 import java.nio.ByteBuffer
@@ -296,3 +297,4 @@ object SchemaConverters {
     }
   }
 }
+// scalastyle:on
