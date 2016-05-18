@@ -1,0 +1,16 @@
+language: scala
+scala:
+  - 2.10.6
+  - 2.11.8
+jdk: oraclejdk7
+
+cache:
+  directories:
+    - $HOME/.sbt/boot
+    - $HOME/.ivy2/cache
+
+notifications:
+  email:
+    - neville@spotify.com
+    - rav@spotify.com
+    - amartin@spotify.com
