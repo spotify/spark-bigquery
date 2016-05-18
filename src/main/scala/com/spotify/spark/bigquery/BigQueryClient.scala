@@ -43,6 +43,8 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
   private val SCOPES = List(BigqueryScopes.BIGQUERY).asJava
   private val STAGING_DATASET_PREFIX = "bq.staging_dataset.prefix"
   private val STAGING_DATASET_PREFIX_DEFAULT = "spark_bigquery_staging_"
+  private val STAGING_DATASET_LOCATION = "bq.staging_dataset.location"
+  private val STAGING_DATASET_LOCATION_DEFAULT = "US"
   private val STAGING_DATASET_TABLE_EXPIRATION_MS = 86400000L
   private val STAGING_DATASET_DESCRIPTION = "Spark BigQuery staging dataset"
 
@@ -65,7 +67,7 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
    * Perform a BigQuery SELECT query and save results to a temporary table.
    */
   def query(sqlQuery: String): TableReference = {
-    val location = getQueryLocation(sqlQuery)
+    val location = conf.get(STAGING_DATASET_LOCATION, STAGING_DATASET_LOCATION_DEFAULT)
     val destinationTable = temporaryTable(location)
     val job = createQueryJob(sqlQuery, destinationTable, dryRun = false)
     waitForJob(job)
@@ -100,22 +102,6 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
     BigQueryUtils.waitForJobCompletion(bigquery, projectId, job.getJobReference, new Progressable {
       override def progress(): Unit = {}
     })
-  }
-
-  private def getQueryTables(sqlQuery: String): Seq[TableReference] = {
-    val job = createQueryJob(sqlQuery, null, dryRun = true)
-    job.getStatistics.getQuery.getReferencedTables.asScala
-  }
-
-  private def getQueryLocation(sqlQuery: String): String = {
-    val s = getQueryTables(sqlQuery).map { t =>
-      bigquery.datasets().get(t.getProjectId, t.getDatasetId).execute().getLocation
-    }.toSet
-    if (s.size == 1) {
-      Option(s.head).getOrElse("US")
-    } else {
-      throw new IllegalArgumentException("Invalid dataset locations: " + s.mkString(", "))
-    }
   }
 
   private def stagingDataset(location: String): DatasetReference = {
@@ -159,7 +145,6 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
     var queryConfig = new JobConfigurationQuery()
       .setQuery(sqlQuery)
       .setPriority(PRIORITY)
-      .setUseLegacySql(false)
       .setCreateDisposition("CREATE_IF_NEEDED")
       .setWriteDisposition("WRITE_EMPTY")
     if (destinationTable != null) {

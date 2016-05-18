@@ -28,8 +28,6 @@ spIncludeMaven := true
 
 libraryDependencies ++= Seq(
   "com.databricks" %% "spark-avro" % "2.0.1",
-  "com.google.apis" % "google-api-services-bigquery" % "v2-rev289-1.21.0"
-    exclude ("com.google.guava", "guava-jdk5"),
   "com.google.cloud.bigdataoss" % "bigquery-connector" % "0.7.5-hadoop2"
     exclude ("com.google.guava", "guava-jdk5"),
   "org.slf4j" % "slf4j-simple" % "1.7.21",
