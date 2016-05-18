@@ -17,7 +17,7 @@
 
 name := "spark-bigquery"
 organization := "com.spotify"
-scalaVersion := "2.11.8"
+scalaVersion := "2.10.6"
 crossScalaVersions := Seq("2.10.6", "2.11.8")
 
 spName := "spotify/spark-bigquery"
