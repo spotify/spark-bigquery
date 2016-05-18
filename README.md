@@ -12,20 +12,24 @@ To try it out in a local SBT console:
 import com.spotify.spark.bigquery._
 
 // Set up GCP credentials
-val conf = sc.hadoopConfiguration
-conf.set("mapred.bq.auth.service.account.json.keyfile", "<JSON_KEY_FILE>")
-conf.set("fs.gs.auth.service.account.json.keyfile", "<JSON_KEY_FILE>")
+sqlContext.setGcpJsonKeyFile("<JSON_KEY_FILE>")
 
+// Set up BigQuery project and bucket
 sqlContext.setBigQueryProjectId("<BILLING_PROJECT>")
 sqlContext.setBigQueryGcsBucket("<GCS_BUCKET>")
 
-// SQL 2011
-// https://cloud.google.com/bigquery/sql-reference/
-val df = sqlContext.bigQuerySelect(
-  """
-    |SELECT word, word_count FROM `bigquery-public-data.samples.shakespeare
-  """.stripMargin)
+// Set up BigQuery dataset location, default is US
+sqlContext.setBigQueryDatasetLocation("<DATASET_LOCATION>")
 
+// Load everything from a table
+val table = sqlContext.bigQueryTable("bigquery-public-data:samples.shakespeare")
+
+// Load results from a SQL query
+// Only legacy SQL dialect is supported for now
+val df = sqlContext.bigQuerySelect(
+  "SELECT word, word_count FROM [bigquery-public-data:samples.shakespeare]")
+
+  // Save data to a table
 df.saveAsBigQueryTable("my-project:my_dataset.my_table")
 ```
 
