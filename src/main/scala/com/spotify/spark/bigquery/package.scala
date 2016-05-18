@@ -73,6 +73,20 @@ package object bigquery {
       conf.set(BigQueryConfiguration.GCS_BUCKET_KEY, gcsBucket)
 
     /**
+     * Set BigQuery dataset location, e.g. US, EU.
+     */
+    def setBigQueryDatasetLocation(location: String): Unit =
+      conf.set(BigQueryClient.STAGING_DATASET_LOCATION, location)
+
+    /**
+     * Set GCP JSON key file.
+     */
+    def setGcpJsonKeyFile(jsonKeyFile: String): Unit = {
+      conf.set("mapred.bq.auth.service.account.json.keyfile", jsonKeyFile)
+      conf.set("fs.gs.auth.service.account.json.keyfile", jsonKeyFile)
+    }
+
+    /**
      * Perform a BigQuery SELECT query and load results as a [[DataFrame]].
      * @param sqlQuery SQL query in SQL-2011 dialect.
      */
