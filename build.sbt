@@ -49,12 +49,6 @@ releaseCrossBuild             := true
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
 pomExtra                      := {
   <url>https://github.com/spotify/spark-bigquery</url>
-  <licenses>
-    <license>
-      <name>Apache 2</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-    </license>
-  </licenses>
   <scm>
     <url>git@github.com/spotify/spark-bigquery.git</url>
     <connection>scm:git:git@github.com:spotify/spark-bigquery.git</connection>
