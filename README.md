@@ -6,7 +6,11 @@ spark-bigquery
 
 Google BigQuery support for Spark, SQL, and DataFrames.
 
-To try it out in a local SBT console:
+To use the package in a Google [Cloud Dataproc](https://cloud.google.com/dataproc/) cluster:
+
+`spark-shell --packages com.spotify:spark-bigquery_2.10:0.1.0`
+
+To use it in a local SBT console:
 
 ```scala
 import com.spotify.spark.bigquery._
@@ -20,7 +24,11 @@ sqlContext.setBigQueryGcsBucket("<GCS_BUCKET>")
 
 // Set up BigQuery dataset location, default is US
 sqlContext.setBigQueryDatasetLocation("<DATASET_LOCATION>")
+```
 
+Usage:
+
+```scala
 // Load everything from a table
 val table = sqlContext.bigQueryTable("bigquery-public-data:samples.shakespeare")
 
