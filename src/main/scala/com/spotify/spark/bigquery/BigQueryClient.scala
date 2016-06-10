@@ -18,6 +18,7 @@
 package com.spotify.spark.bigquery
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
@@ -26,6 +27,7 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.bigquery.model._
 import com.google.api.services.bigquery.{Bigquery, BigqueryScopes}
 import com.google.cloud.hadoop.io.bigquery._
+import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.util.Progressable
 import org.joda.time.Instant
@@ -70,6 +72,25 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
       .build()
   }
 
+  private val queryCache: LoadingCache[String, TableReference] =
+    CacheBuilder.newBuilder()
+      .expireAfterWrite(STAGING_DATASET_TABLE_EXPIRATION_MS, TimeUnit.MILLISECONDS)
+      .build[String, TableReference](new CacheLoader[String, TableReference] {
+      override def load(key: String): TableReference = {
+        val sqlQuery = key
+        logger.info(s"Executing query $sqlQuery")
+
+        val location = conf.get(STAGING_DATASET_LOCATION, STAGING_DATASET_LOCATION_DEFAULT)
+        val destinationTable = temporaryTable(location)
+        val tableName = BigQueryStrings.toString(destinationTable)
+        logger.info(s"Destination table: $destinationTable")
+
+        val job = createQueryJob(sqlQuery, destinationTable, dryRun = false)
+        waitForJob(job)
+        destinationTable
+      }
+    })
+
   private def inConsole = Thread.currentThread().getStackTrace.exists(
     _.getClassName.startsWith("scala.tools.nsc.interpreter."))
   private val PRIORITY = if (inConsole) "INTERACTIVE" else "BATCH"
@@ -80,13 +101,7 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
   /**
    * Perform a BigQuery SELECT query and save results to a temporary table.
    */
-  def query(sqlQuery: String): TableReference = {
-    val location = conf.get(STAGING_DATASET_LOCATION, STAGING_DATASET_LOCATION_DEFAULT)
-    val destinationTable = temporaryTable(location)
-    val job = createQueryJob(sqlQuery, destinationTable, dryRun = false)
-    waitForJob(job)
-    destinationTable
-  }
+  def query(sqlQuery: String): TableReference = queryCache.get(sqlQuery)
 
   /**
    * Load an Avro data set on GCS to a BigQuery table.
