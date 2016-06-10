@@ -64,13 +64,14 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
 
   private val SCOPES = List(BigqueryScopes.BIGQUERY).asJava
 
-  private val projectId: String = conf.get(BigQueryConfiguration.PROJECT_ID_KEY)
   private val bigquery: Bigquery = {
     val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
     new Bigquery.Builder(new NetHttpTransport, new JacksonFactory, credential)
       .setApplicationName("spark-bigquery")
       .build()
   }
+
+  private def projectId: String = conf.get(BigQueryConfiguration.PROJECT_ID_KEY)
 
   private val queryCache: LoadingCache[String, TableReference] =
     CacheBuilder.newBuilder()
