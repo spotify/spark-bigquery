@@ -109,6 +109,8 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
   def load(gcsPath: String, destinationTable: TableReference,
            writeDisposition: WriteDisposition.Value = null,
            createDisposition: CreateDisposition.Value = null): Unit = {
+    val tableName = BigQueryStrings.toString(destinationTable)
+    logger.info(s"Loading $gcsPath into $tableName")
     var loadConfig = new JobConfigurationLoad()
       .setDestinationTable(destinationTable)
       .setSourceFormat("AVRO")
