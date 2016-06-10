@@ -36,13 +36,22 @@ import scala.collection.JavaConverters._
 import scala.util.Random
 import scala.util.control.NonFatal
 
-object BigQueryClient {
+private[bigquery] object BigQueryClient {
   val STAGING_DATASET_PREFIX = "bq.staging_dataset.prefix"
   val STAGING_DATASET_PREFIX_DEFAULT = "spark_bigquery_staging_"
   val STAGING_DATASET_LOCATION = "bq.staging_dataset.location"
   val STAGING_DATASET_LOCATION_DEFAULT = "US"
   val STAGING_DATASET_TABLE_EXPIRATION_MS = 86400000L
   val STAGING_DATASET_DESCRIPTION = "Spark BigQuery staging dataset"
+
+  private var instance: BigQueryClient = null
+
+  def getInstance(conf: Configuration): BigQueryClient = {
+    if (instance == null) {
+      instance = new BigQueryClient(conf)
+    }
+    instance
+  }
 }
 
 private[bigquery] class BigQueryClient(conf: Configuration) {

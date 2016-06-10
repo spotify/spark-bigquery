@@ -47,7 +47,7 @@ package object bigquery {
 
     val sc = self.sparkContext
     val conf = sc.hadoopConfiguration
-    val bq = new BigQueryClient(conf)
+    val bq = BigQueryClient.getInstance(conf)
 
     // Register GCS implementation
     if (conf.get("fs.gs.impl") == null) {
@@ -133,7 +133,7 @@ package object bigquery {
 
     val sqlContext = self.sqlContext
     val conf = sqlContext.sparkContext.hadoopConfiguration
-    val bq = new BigQueryClient(conf)
+    val bq = BigQueryClient.getInstance(conf)
 
     sqlContext.setConf("spark.sql.avro.compression.codec", "deflate")
 
