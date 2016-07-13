@@ -179,6 +179,7 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
       .setPriority(PRIORITY)
       .setCreateDisposition("CREATE_IF_NEEDED")
       .setWriteDisposition("WRITE_EMPTY")
+      .setAllowLargeResults(true)
     if (destinationTable != null) {
       queryConfig = queryConfig.setDestinationTable(destinationTable)
     }
