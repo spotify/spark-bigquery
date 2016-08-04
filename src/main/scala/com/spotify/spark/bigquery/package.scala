@@ -23,6 +23,7 @@ import com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem
 import com.google.cloud.hadoop.io.bigquery._
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
+import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.LongWritable
 import org.apache.hadoop.mapreduce.InputFormat
 import org.apache.spark.sql.types.StructType
@@ -147,7 +148,13 @@ package object bigquery {
       val temp = s"spark-bigquery-${System.currentTimeMillis()}=${Random.nextInt(Int.MaxValue)}"
       val gcsPath = s"gs://$bucket/hadoop/tmp/spark-bigquery/$temp"
       self.write.avro(gcsPath)
-      bq.load(gcsPath, tableRef, writeDisposition, createDisposition)
+      val df = bq.load(gcsPath, tableRef, writeDisposition, createDisposition)
+
+      val path = new Path(gcsPath)
+      val fs = FileSystem.get(path.toUri, conf)
+      fs.delete(path, true)
+
+      df
     }
 
     /**
