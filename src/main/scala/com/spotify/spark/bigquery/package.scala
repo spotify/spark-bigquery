@@ -149,11 +149,7 @@ package object bigquery {
       val gcsPath = s"gs://$bucket/hadoop/tmp/spark-bigquery/$temp"
       self.write.avro(gcsPath)
       val df = bq.load(gcsPath, tableRef, writeDisposition, createDisposition)
-
-      val path = new Path(gcsPath)
-      val fs = FileSystem.get(path.toUri, conf)
-      fs.delete(path, true)
-
+      delete(new Path(gcsPath))
       df
     }
 
@@ -167,6 +163,11 @@ package object bigquery {
         BigQueryStrings.parseTableReference(tableSpec),
         writeDisposition,
         createDisposition)
+
+    private def delete(path: Path): Unit = {
+      val fs = FileSystem.get(path.toUri, conf)
+      fs.delete(path, true)
+    }
 
   }
 
