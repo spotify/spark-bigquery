@@ -179,9 +179,10 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
       .setPriority(PRIORITY)
       .setCreateDisposition("CREATE_IF_NEEDED")
       .setWriteDisposition("WRITE_EMPTY")
-      .setAllowLargeResults(true)
     if (destinationTable != null) {
-      queryConfig = queryConfig.setDestinationTable(destinationTable)
+      queryConfig = queryConfig
+        .setDestinationTable(destinationTable)
+        .setAllowLargeResults(true)
     }
 
     val jobConfig = new JobConfiguration().setQuery(queryConfig).setDryRun(dryRun)
