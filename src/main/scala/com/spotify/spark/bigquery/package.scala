@@ -88,6 +88,15 @@ package object bigquery {
     }
 
     /**
+     * Set GCP pk12 key file.
+     */
+    def setGcpPk12KeyFile(pk12KeyFile: String): Unit = {
+      conf.set("google.cloud.auth.service.account.keyfile", pk12KeyFile)
+      conf.set("mapred.bq.auth.service.account.keyfile", pk12KeyFile)
+      conf.set("fs.gs.auth.service.account.keyfile", pk12KeyFile)
+    }
+
+    /**
      * Perform a BigQuery SELECT query and load results as a [[DataFrame]].
      * @param sqlQuery SQL query in SQL-2011 dialect.
      */
