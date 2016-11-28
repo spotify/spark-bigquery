@@ -7,7 +7,7 @@ First and most important is that the Google BQ client expects an Env variable wi
 
 You can add that via a init scipt, save it inside the /databricks/init/ folder
 
-Once you save the file locally use the databricks api to launch a cluster with an env variable set up
+Once you save the file locally use the databricks [api](https://docs.databricks.com/release-notes/product/2.30.html#set-environmental-variables-in-spark-from-rest-api) to launch a cluster with an env variable set up
 You can use this curl command to do that 
 
 ```
