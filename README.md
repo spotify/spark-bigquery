@@ -7,9 +7,14 @@ spark-bigquery
 
 Google BigQuery support for Spark, SQL, and DataFrames.
 
+| spark-bigquery version | Spark version | Comment |
+| :--------------------: | ------------- | ------- |
+| 0.2.x | 2.x.y | Active development |
+| 0.1.x | 1.x.y | Development halted |
+
 To use the package in a Google [Cloud Dataproc](https://cloud.google.com/dataproc/) cluster:
 
-`spark-shell --packages com.spotify:spark-bigquery_2.10:0.1.0`
+`spark-shell --packages com.spotify:spark-bigquery_2.10:0.2.0`
 
 To use it in a local SBT console:
 
