@@ -21,7 +21,7 @@ scalaVersion := "2.10.6"
 crossScalaVersions := Seq("2.10.6", "2.11.8")
 
 spName := "spotify/spark-bigquery"
-sparkVersion := "2.1.0"
+sparkVersion := "2.0.2"
 sparkComponents := Seq("core", "sql")
 spAppendScalaVersion := true
 spIncludeMaven := true
