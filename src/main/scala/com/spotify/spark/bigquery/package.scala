@@ -18,17 +18,19 @@
 package com.spotify.spark
 
 import org.apache.spark.sql.{DataFrame, SQLContext}
+import scala.language.implicitConversions
 
 package object bigquery {
 
   /**
    * Enhanced version of [[SQLContext]] with BigQuery support.
    */
-  implicit class BigQuerySQLContextImplicit(self: SQLContext) extends BigQuerySQLContext(self)
+  implicit def makebigQueryContext(sql: SQLContext): BigQuerySQLContext =
+    new BigQuerySQLContext(sql)
 
   /**
    * Enhanced version of [[DataFrame]] with BigQuery support.
    */
-  implicit class BigQueryDataFrameImplicit(self: DataFrame) extends BigQueryDataFrame(self)
-
+  implicit def makebigQueryDataFrame(df: DataFrame): BigQueryDataFrame =
+    new BigQueryDataFrame(df)
 }
