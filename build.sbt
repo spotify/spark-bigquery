@@ -27,7 +27,7 @@ spAppendScalaVersion := true
 spIncludeMaven := true
 
 libraryDependencies ++= Seq(
-  "com.databricks" %% "spark-avro" % "3.0.0",
+  "com.databricks" %% "spark-avro" % "4.0.0",
   "com.google.cloud.bigdataoss" % "bigquery-connector" % "0.10.2-hadoop2"
     exclude ("com.google.guava", "guava-jdk5"),
   "org.slf4j" % "slf4j-simple" % "1.7.21",

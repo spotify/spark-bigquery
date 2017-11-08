@@ -113,7 +113,7 @@ class BigQuerySQLContext(sqlContext: SQLContext) {
     val schema = new Schema.Parser().parse(schemaString)
 
     val structType = SchemaConverters.toSqlType(schema).dataType.asInstanceOf[StructType]
-    val converter = SchemaConverters.createConverterToSQL(schema)
+    val converter = SchemaConverters.createConverterToSQL(schema, structType)
       .asInstanceOf[GenericData.Record => Row]
     sqlContext.createDataFrame(rdd.map(converter), structType)
   }
