@@ -45,6 +45,9 @@ private[bigquery] object BigQueryClient {
   val STAGING_DATASET_LOCATION_DEFAULT = "US"
   val STAGING_DATASET_TABLE_EXPIRATION_MS = 86400000L
   val STAGING_DATASET_DESCRIPTION = "Spark BigQuery staging dataset"
+  val QUERY_JOB_PRIORITY = "bq.query_job.priority"
+  val JOB_PRIORITY_INTERACTIVE = "INTERACTIVE"
+  val JOB_PRIORITY_BATCH = "BATCH"
 
   private var instance: BigQueryClient = null
 
@@ -83,7 +86,6 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
 
         val location = conf.get(STAGING_DATASET_LOCATION, STAGING_DATASET_LOCATION_DEFAULT)
         val destinationTable = temporaryTable(location)
-        val tableName = BigQueryStrings.toString(destinationTable)
         logger.info(s"Destination table: $destinationTable")
 
         val job = createQueryJob(sqlQuery, destinationTable, dryRun = false)
@@ -94,7 +96,7 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
 
   private def inConsole = Thread.currentThread().getStackTrace.exists(
     _.getClassName.startsWith("scala.tools.nsc.interpreter."))
-  private val PRIORITY = if (inConsole) "INTERACTIVE" else "BATCH"
+  private val DEFAULT_PRIORITY = if (inConsole) JOB_PRIORITY_INTERACTIVE else JOB_PRIORITY_BATCH
   private val TABLE_ID_PREFIX = "spark_bigquery"
   private val JOB_ID_PREFIX = "spark_bigquery"
   private val TIME_FORMATTER = DateTimeFormat.forPattern("yyyyMMddHHmmss")
@@ -174,9 +176,11 @@ private[bigquery] class BigQueryClient(conf: Configuration) {
   private def createQueryJob(sqlQuery: String,
                              destinationTable: TableReference,
                              dryRun: Boolean): Job = {
+
+    val priority = conf.get(QUERY_JOB_PRIORITY, DEFAULT_PRIORITY)
     var queryConfig = new JobConfigurationQuery()
       .setQuery(sqlQuery)
-      .setPriority(PRIORITY)
+      .setPriority(priority)
       .setCreateDisposition("CREATE_IF_NEEDED")
       .setWriteDisposition("WRITE_EMPTY")
     if (destinationTable != null) {

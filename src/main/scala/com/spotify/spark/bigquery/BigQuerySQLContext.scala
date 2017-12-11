@@ -70,6 +70,18 @@ class BigQuerySQLContext(sqlContext: SQLContext) {
     conf.set(BigQueryClient.STAGING_DATASET_LOCATION, location)
 
   /**
+    * Set BigQuery query job priority.
+    * @param interactive Whether to execute query jobs as interactive
+    *                    or batch queries.
+    * @see https://cloud.google.com/bigquery/docs/query-overview
+    */
+  def setBigQueryJobPriority(interactive: Boolean): Unit = {
+    import BigQueryClient._
+    val priority = if(interactive) JOB_PRIORITY_INTERACTIVE else JOB_PRIORITY_BATCH
+    conf.set(QUERY_JOB_PRIORITY, priority)
+  }
+
+  /**
     * Set GCP JSON key file.
     */
   def setGcpJsonKeyFile(jsonKeyFile: String): Unit = {
