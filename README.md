@@ -1,3 +1,5 @@
+Added support for Spark 2.4.0 and Scala 2.12.
+
 MAINTENANCE MODE
 ================
 

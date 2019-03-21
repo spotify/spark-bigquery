@@ -54,8 +54,8 @@ class BigQueryDataFrame(df: DataFrame) {
     val gcsPath = s"gs://$bucket/hadoop/tmp/spark-bigquery/$temp"
 
     tmpWriteOptions match {
-      case null => df.write.avro(gcsPath)
-      case _ => df.write.options(tmpWriteOptions).avro(gcsPath)
+      case null => df.write.format("avro").save(gcsPath)
+      case _ => df.write.options(tmpWriteOptions).format("avro").save(gcsPath)
     }
 
     val fdf = bq.load(gcsPath, tableRef, writeDisposition, createDisposition)

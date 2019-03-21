@@ -17,12 +17,12 @@
 
 name := "spark-bigquery"
 organization := "com.spotify"
-scalaVersion := "2.11.11"
-crossScalaVersions := Seq("2.10.6", "2.11.11")
+scalaVersion := "2.12.8"
+crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.8")
 
 spName := "spotify/spark-bigquery"
-sparkVersion := "2.2.0"
-sparkComponents := Seq("core", "sql")
+sparkVersion := "2.4.0"
+sparkComponents := Seq("core", "sql", "avro")
 spAppendScalaVersion := true
 spIncludeMaven := true
 
@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
     exclude ("com.google.guava", "guava-jdk5"),
   "org.slf4j" % "slf4j-simple" % "1.7.21",
   "joda-time" % "joda-time" % "2.9.3",
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.7" % "test"
 )
 
 assemblyMergeStrategy in assembly := {
